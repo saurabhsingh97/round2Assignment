@@ -1,0 +1,27 @@
+.cb-block{
+    padding-left: 20px;
+    user-select: none;
+    position: relative;
+    .cb-label{
+        padding: 5px 0;
+        display: block;
+        cursor: pointer;
+        width: fit-content;
+    }
+    .mgl-5{
+        margin-left: 5px;
+    }
+    .bullet-arrow{
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 8px;
+        top: 10px;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-left: 6px solid #414e59;
+        &.open{
+            transform: rotate(90deg);
+        }
+    }
+}
