@@ -27,7 +27,7 @@ const NestedCB = (props) => {
         return returnEle;
     }
 
-    const isEveryChildSelected = (parentEleLabel) => {
+    const getSelectedChildren = (parentEleLabel) => {
         const noOfChildren = childMappingObj[parentEleLabel].length;
         let selectedChildCount = 0;
         childMappingObj[parentEleLabel].forEach(cur => {
@@ -35,12 +35,31 @@ const NestedCB = (props) => {
                 selectedChildCount++;
             }
         })
-        return selectedChildCount === noOfChildren;
+        return {
+            isAllSelected: selectedChildCount === noOfChildren,
+            selectedChildCount
+        }
+    }
+
+    const partialySelect = (ele) => {
+        ele.indeterminate = true;
+        const indexToRemove = selectedIds.indexOf(ele.name);
+        if(indexToRemove > -1){
+            selectedIds.splice(indexToRemove, 1);
+        }
+        if(ele.parentId){
+            const parentLabel = ele.parentId;
+            const parentEle = getEleFromLabel(parentLabel);
+            if(parentEle.checked){
+                partialySelect(parentEle);
+            }
+        }
     }
     
     const updateHierarchy = (ele, type, flowDirection) => {
         if(type === 'select'){
             ele.checked = true;
+            ele.indeterminate = false;
             selectedIds.push(ele.name);
             if(flowDirection!=='out' && ele.children.length){
                 ele.children.forEach((cur) => {
@@ -49,13 +68,21 @@ const NestedCB = (props) => {
             }
             if(flowDirection!=='in' && ele.parentId){
                 const parentEleLabel = ele.parentId;
-                const isAllSelected = isEveryChildSelected(parentEleLabel);
+                const parentEle = getEleFromLabel(parentEleLabel);
+                const { isAllSelected } = getSelectedChildren(parentEleLabel);
                 if(isAllSelected){
-                    const parentEle = getEleFromLabel(parentEleLabel);
                     selectedIds = updateHierarchy(parentEle, 'select', 'out');
+                }else{
+                    parentEle.indeterminate = true;
                 }
             }
         }else{
+            ele.checked = false;
+            ele.indeterminate = false;
+            const indexToRemove = selectedIds.indexOf(ele.name);
+            if(indexToRemove > -1){
+                selectedIds.splice(indexToRemove, 1);
+            }
             if(flowDirection!=='out' && ele.children.length){
                 ele.children.forEach((cur) => {
                     selectedIds = updateHierarchy(cur, 'deSelect', 'in');
@@ -64,12 +91,12 @@ const NestedCB = (props) => {
             if(flowDirection!=='in' && ele.parentId){
                 const parentEleLabel = ele.parentId;
                 const parentEle = getEleFromLabel(parentEleLabel);
-                selectedIds = updateHierarchy(parentEle, 'deSelect', 'out');   
-            }
-            ele.checked = false;
-            const indexToRemove = selectedIds.indexOf(ele.name);
-            if(indexToRemove > -1){
-                selectedIds.splice(indexToRemove, 1);
+                const { selectedChildCount } = getSelectedChildren(parentEleLabel);
+                if(!selectedChildCount){
+                    selectedIds = updateHierarchy(parentEle, 'deSelect', 'out'); 
+                }else{
+                    partialySelect(parentEle);
+                }
             }
         }
         return selectedIds;

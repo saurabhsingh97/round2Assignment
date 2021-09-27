@@ -17,8 +17,14 @@ const CheckBox = (props) => {
                 null
             }
             <label htmlFor={cbId} className='cb-label'>
-                <input 
+                <input
+                    ref={input => {
+                        if(input){
+                            input.indeterminate = ele.indeterminate
+                        }
+                    }} 
                     id={cbId}
+                    className={`check-mark ${ele.indeterminate ? 'partial-select' : ''}`}
                     type='checkbox'
                     checked={isChecked}
                     onChange={(e) => selectUnselect(e, ele)}
