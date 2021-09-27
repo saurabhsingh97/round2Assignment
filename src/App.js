@@ -39,10 +39,14 @@ const App = () => {
   },{
     name: '0-0-1',
     parentId: '0-0',
-  }];    
+  }];
+  const nestedCbProps = {
+    cbArr,
+    onUpdate: (data) => console.log('Selected Values', data)
+  };    
   return (
     <div className="App">
-      <NestedCB cbArr={cbArr}/>
+      <NestedCB {...nestedCbProps} />
     </div>
   );
 }

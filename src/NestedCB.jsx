@@ -1,15 +1,16 @@
 import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import CheckBox from './CheckBox';
+import Output from './Output';
 import {getChildMappingObj, getFormattedArray} from './utils';
 import './nested_cb.scss';
 const NestedCB = (props) => {
-    const {cbArr} = props;
+    const {cbArr, onUpdate} = props;
     const [selectedEle, setSelectedEle] = useState([]);
     var selectedIds = [...selectedEle];
     
     const childMappingObj = useMemo(() => getChildMappingObj(cbArr), [cbArr]);
-    const formattedCBArr = useMemo(() => getFormattedArray(cbArr, childMappingObj), [cbArr]);
+    const formattedCBArr = useMemo(() => getFormattedArray(cbArr, childMappingObj), [cbArr, childMappingObj]);
 
     const getEleFromLabel = (label) => {
         const accessIndexArr = label.split('-');
@@ -42,7 +43,7 @@ const NestedCB = (props) => {
             ele.checked = true;
             selectedIds.push(ele.name);
             if(flowDirection!=='out' && ele.children.length){
-                ele.children.map((cur) => {
+                ele.children.forEach((cur) => {
                     selectedIds = updateHierarchy(cur, 'select', 'in');
                 })
             }
@@ -56,7 +57,7 @@ const NestedCB = (props) => {
             }
         }else{
             if(flowDirection!=='out' && ele.children.length){
-                ele.children.map((cur) => {
+                ele.children.forEach((cur) => {
                     selectedIds = updateHierarchy(cur, 'deSelect', 'in');
                 })
             }
@@ -81,12 +82,13 @@ const NestedCB = (props) => {
         }else{
             tempSelectedIds = updateHierarchy(ele, 'deSelect');
         }
-        setSelectedEle([...new Set(tempSelectedIds)]);
+        const distinctSelectedEle = [...new Set(tempSelectedIds)]
+        setSelectedEle(distinctSelectedEle);
+        onUpdate(distinctSelectedEle);
     }
     
     const cbProps = {
-        selectUnselect,
-        selectedEle
+        selectUnselect
     }
     
     const renderCheckBox = (arr) => {
@@ -102,20 +104,23 @@ const NestedCB = (props) => {
     }
 
     return(
-        <div className='cb-container'>
-            {renderCheckBox(formattedCBArr)}
-            Selected Elements :-
-            {selectedEle.map(cur => <div key={cur}>{cur}</div>)}
-        </div>
+        <>
+            <div className='cb-container'>
+                {renderCheckBox(formattedCBArr)}
+            </div>
+            <Output selectedEle={selectedEle} />
+        </>
     )
 }
 
 NestedCB.propTypes = {
-    cbArr: PropTypes.array
+    cbArr: PropTypes.array,
+    onUpdate: PropTypes.func
 };
 
 NestedCB.defaultProps = {
-    cbArr: []
+    cbArr: [],
+    onUpdate: () => {}
 }
 
 export default NestedCB;

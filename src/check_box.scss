@@ -20,6 +20,7 @@
         border-top: 4px solid transparent;
         border-bottom: 4px solid transparent;
         border-left: 6px solid #414e59;
+        cursor: pointer;
         &.open{
             transform: rotate(90deg);
         }
