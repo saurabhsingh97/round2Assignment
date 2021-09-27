@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import './check_box.scss';
 const CheckBox = (props) => {
     const {ele, selectUnselect} = props;
@@ -27,6 +28,16 @@ const CheckBox = (props) => {
             {showChildren ? props.children : null}
         </div>
     )
+}
+
+CheckBox.propTypes = {
+    ele: PropTypes.object,
+    selectUnselect: PropTypes.func
+};
+
+CheckBox.defaultProps = {
+    ele: {},
+    selectUnselect: () => {}
 }
 
 export default CheckBox;

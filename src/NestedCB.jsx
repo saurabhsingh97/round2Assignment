@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import CheckBox from './CheckBox';
 import {getChildMappingObj, getFormattedArray} from './utils';
 import './nested_cb.scss';
@@ -107,6 +108,14 @@ const NestedCB = (props) => {
             {selectedEle.map(cur => <div key={cur}>{cur}</div>)}
         </div>
     )
+}
+
+NestedCB.propTypes = {
+    cbArr: PropTypes.array
+};
+
+NestedCB.defaultProps = {
+    cbArr: []
 }
 
 export default NestedCB;

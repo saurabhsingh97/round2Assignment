@@ -1,6 +1,5 @@
-import './App.css';
 import NestedCB from './NestedCB';
-function App() {
+const App = () => {
   const cbArr = [{
     name: '0-0',
     parentId: null
